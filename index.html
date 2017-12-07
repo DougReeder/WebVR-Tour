@@ -1,11 +1,114 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0; URL=CharringtonPark/bridge-west.html" />
-    <title>Tour root</title>
-    <meta name="description" content="Hello, World! - A-Frame">
-  </head>
+    <head>
+        <meta charset="utf-8">
+        <title>Charrington Park</title>
+        <meta name="description" content="Charrington Park">
+        <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+        <script>
+            AFRAME.registerComponent('detect-pointer', {
+                init: function () {
+                    let sceneEl = this.el;
+
+                    let cursorEl = sceneEl.querySelector('[cursor]');
+                    console.log("cursorEl:", cursorEl);
+
+                    let hasPointer = false;
+
+                    let gamepads = navigator.getGamepads();
+                    console.log("navigator.getGamepads()", gamepads);
+                    for (let i=0; i<gamepads.length; ++i) {
+                        checkGamepad(gamepads[i]);
+                    }
+
+                    window.addEventListener("gamepadconnected", function(e) {
+                        console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+                            e.gamepad.index, e.gamepad.id,
+                            e.gamepad.buttons.length, e.gamepad.axes.length);
+                        checkGamepad(e.gamepad);
+                    });
+
+                    function checkGamepad(gamepad) {
+                        if (gamepad && gamepad.connected && gamepad.pose && gamepad.pose.hasOrientation) {
+                            hasPointer = true;
+                            console.log("gamepad (pointer):", gamepad);
+                        } else {
+                            console.log("gamepad (no pointer):", gamepad);
+                        }
+                        cursorEl.setAttribute('visible', !hasPointer);
+                    }
+                }
+            });
+            AFRAME.registerComponent('hash-change', {
+                init: function () {
+                    let component = this;
+                    let sky = component.el.querySelector('a-sky');
+
+                    this.spheres = {
+                        'CharringtonPark/20171110_162651.jpg': {
+                            title: "Charrington Park - Bridge - West",
+                            label: "Bridge - West",
+                            offset: 180
+                        },
+                        'CharringtonPark/20171110_163142.jpg': {
+                            title: "Charrington Park - Meadow",
+                            label: "Meadow",
+                            offset: 180
+                        },
+                    };
+                    this.portals = {
+                        'CharringtonPark/20171110_162651.jpg': {
+                            'CharringtonPark/20171110_163142.jpg': 90
+                        },
+                        'CharringtonPark/20171110_163142.jpg': {
+                            'CharringtonPark/20171110_162651.jpg': 45
+                        }
+                    };
+
+                    window.addEventListener("hashchange", hashChange, false);
+
+                    function hashChange(evt) {
+                        let path = new URL(evt.newURL).hash.slice(1);
+                        console.log("hashchange:", path, component.portals[path], component.el.getAttribute('src'));
+                        sky.setAttribute('src', '#sphere-'+path);
+                        document.title = component.spheres[path].title;
+
+
+
+                        for (portalPath in component.portals[path]) {
+                            console.log("portalPath:", portalPath);
+                        }
+                    }
+                }
+            });
+        </script>
+    </head>
   <body>
+  <a-scene detect-pointer hash-change>
+    <a-assets>
+      <img id="sphere-CharringtonPark/20171110_162651.jpg" src="CharringtonPark/20171110_162651.jpg">
+      <img id="sphere-CharringtonPark/20171110_163142.jpg" src="CharringtonPark/20171110_163142.jpg">
+      <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
+    </a-assets>
+    <a-sky src="#sphere-CharringtonPark/20171110_162651.jpg"></a-sky>
+    <a-entity position="-7 1.8 -2" rotation="0 90 0"
+              link="href:#CharringtonPark/20171110_163142.jpg; title:Meadow; image: #sphere-CharringtonPark/20171110_163142.jpg"
+              sound="on: click; src: #click-sound"></a-entity>
+    <a-entity position="-5 1.8 -6" rotation="0 45 0"
+              link="href:#CharringtonPark/20171110_162651.jpg; title:Bridge - West; image: #sphere-CharringtonPark/20171110_162651.jpg"
+              sound="on: click; src: #click-sound"></a-entity>
+    <a-entity laser-controls="hand: right"></a-entity>
+    <a-entity camera look-controls wasd-controls>
+      <a-entity cursor="fuse: true; fuseTimeout=750"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
+                material="color: black; shader: flat">
+        <a-animation begin="click" easing="ease-in" attribute="scale" dur="150"
+                     fill="forwards" from="0.1 0.1 0.1" to="1 1 1"></a-animation>
+        <a-animation begin="cursor-fusing" easing="ease-in" attribute="scale" dur="1500"
+                     fill="backwards" from="1 1 1" to="0.1 0.1 0.1"></a-animation>
+      </a-entity>
+    </a-entity>
+  </a-scene>
   </body>
 </html>
