@@ -41,62 +41,78 @@
             });
             AFRAME.registerComponent('hash-change', {
                 init: function () {
-                    let component = this;
-                    let sky = component.el.querySelector('a-sky');
+                    let baseComponent = this;
+                    let sky = baseComponent.el.querySelector('a-sky');
 
                     this.spheres = {
-                        'CharringtonPark/20171110_162651.jpg': {
+                        'CharringtonPark/CharringtonPark-BridgeWest.jpg': {
                             title: "Charrington Park - Bridge - West",
                             label: "Bridge - West",
-                            offset: 180
+                            offset: 0
                         },
-                        'CharringtonPark/20171110_163142.jpg': {
+                        'CharringtonPark/CharringtonPark-Meadow.jpg': {
                             title: "Charrington Park - Meadow",
                             label: "Meadow",
-                            offset: 180
+                            offset: 0
                         },
                     };
-                    this.portals = {
-                        'CharringtonPark/20171110_162651.jpg': {
-                            'CharringtonPark/20171110_163142.jpg': 90
+                    this.portals = {   // angle to the left of initial center
+                        'CharringtonPark/CharringtonPark-BridgeWest.jpg': {
+                            'CharringtonPark/CharringtonPark-Meadow.jpg': 74
                         },
-                        'CharringtonPark/20171110_163142.jpg': {
-                            'CharringtonPark/20171110_162651.jpg': 45
+                        'CharringtonPark/CharringtonPark-Meadow.jpg': {
+                            'CharringtonPark/CharringtonPark-BridgeWest.jpg': 40
                         }
                     };
+
+                    setSphereAndPortals('CharringtonPark/CharringtonPark-BridgeWest.jpg');
+
+                    function setSphereAndPortals(path) {
+                        console.log("hashchange:", path, baseComponent.portals[path], baseComponent.el.getAttribute('src'));
+                        sky.setAttribute('src', '#sphere-'+path);
+                        document.title = baseComponent.spheres[path].title;
+
+                        let oldPortals = baseComponent.el.querySelectorAll('a-entity[link]');
+                        oldPortals.forEach(oldPortal => {
+                            oldPortal.parentNode.removeChild(oldPortal);
+                        });
+
+                        for (portalPath in baseComponent.portals[path]) {
+                            console.log("adding portal for:", portalPath);
+                            let newPortal = document.createElement('a-entity');
+
+                            let label = baseComponent.spheres[portalPath].label
+                            newPortal.setAttribute('link', {href: '#' +portalPath, title: label, image: '#sphere-' + portalPath});
+
+                            let angle = baseComponent.portals[path][portalPath];
+                            let x = 8 * Math.sin((180+angle)/180*Math.PI);
+                            let z = 8 * Math.cos((180+angle)/180*Math.PI);
+                            newPortal.setAttribute('position', x + " 1.8 " + z);
+                            newPortal.setAttribute('rotation', "0 " + angle + " 0");
+
+                            // sound="on: click; src: #click-sound"
+                            baseComponent.el.appendChild(newPortal);
+                        }
+                    }
 
                     window.addEventListener("hashchange", hashChange, false);
 
                     function hashChange(evt) {
                         let path = new URL(evt.newURL).hash.slice(1);
-                        console.log("hashchange:", path, component.portals[path], component.el.getAttribute('src'));
-                        sky.setAttribute('src', '#sphere-'+path);
-                        document.title = component.spheres[path].title;
-
-
-
-                        for (portalPath in component.portals[path]) {
-                            console.log("portalPath:", portalPath);
-                        }
+                        setSphereAndPortals(path);
                     }
-                }
+               }
             });
         </script>
     </head>
   <body>
-  <a-scene detect-pointer hash-change>
+  <a-scene cursor="rayOrigin: mouse" detect-pointer hash-change>
     <a-assets>
-      <img id="sphere-CharringtonPark/20171110_162651.jpg" src="CharringtonPark/20171110_162651.jpg">
-      <img id="sphere-CharringtonPark/20171110_163142.jpg" src="CharringtonPark/20171110_163142.jpg">
+      <img id="sphere-CharringtonPark/CharringtonPark-BridgeWest.jpg" src="CharringtonPark/CharringtonPark-BridgeWest.jpg">
+      <img id="sphere-CharringtonPark/CharringtonPark-Meadow.jpg" src="CharringtonPark/CharringtonPark-Meadow.jpg">
       <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
     </a-assets>
-    <a-sky src="#sphere-CharringtonPark/20171110_162651.jpg"></a-sky>
-    <a-entity position="-7 1.8 -2" rotation="0 90 0"
-              link="href:#CharringtonPark/20171110_163142.jpg; title:Meadow; image: #sphere-CharringtonPark/20171110_163142.jpg"
-              sound="on: click; src: #click-sound"></a-entity>
-    <a-entity position="-5 1.8 -6" rotation="0 45 0"
-              link="href:#CharringtonPark/20171110_162651.jpg; title:Bridge - West; image: #sphere-CharringtonPark/20171110_162651.jpg"
-              sound="on: click; src: #click-sound"></a-entity>
+    <a-sky></a-sky>
     <a-entity laser-controls="hand: right"></a-entity>
     <a-entity camera look-controls wasd-controls>
       <a-entity cursor="fuse: true; fuseTimeout=750"
