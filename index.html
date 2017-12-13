@@ -168,7 +168,8 @@
                             newPortal.setAttribute('position', x + " 1.6 " + z);
                             newPortal.setAttribute('rotation', "0 " + angle + " 0");
 
-                            // sound="on: click; src: #click-sound"
+                            newPortal.setAttribute('sound', {on: 'click', src: '#click-sound'});
+
                             baseComponent.el.appendChild(newPortal);
                         }
                     }
