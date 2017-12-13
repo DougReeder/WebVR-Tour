@@ -45,9 +45,49 @@
                     let sky = baseComponent.el.querySelector('a-sky');
 
                     this.spheres = {
+                        'CharringtonPark/CharringtonPark-CooperRoad.jpg': {
+                            title: "Charrington Park - Cooper Road",
+                            label: "Cooper Road",
+                            offset: 0
+                        },
                         'CharringtonPark/CharringtonPark-BridgeWest.jpg': {
                             title: "Charrington Park - Bridge - West",
                             label: "Bridge - West",
+                            offset: 0
+                        },
+                        'CharringtonPark/CharringtonPark-BridgeEast.jpg': {
+                            title: "Charrington Park - Bridge - East",
+                            label: "Bridge - East",
+                            offset: 0
+                        },
+                        'CharringtonPark/CharringtonPark-TrailA.jpg': {
+                            title: "Charrington Park - Trail - A",
+                            label: "Trail - A",
+                            offset: 0
+                        },
+                        'CharringtonPark/CharringtonPark-TrailB.jpg': {
+                            title: "Charrington Park - Trail - B",
+                            label: "Trail - B",
+                            offset: 0
+                        },
+                        'CharringtonPark/CharringtonPark-AlumCreek.jpg': {
+                            title: "Charrington Park - Alum Creek",
+                            label: "Alum Creek",
+                            offset: 0
+                        },
+                        'CharringtonPark/CharringtonPark-CorridorSouth.jpg': {
+                            title: "Charrington Park - Corridor South",
+                            label: "Corridor South",
+                            offset: 0
+                        },
+                        'CharringtonPark/CharringtonPark-CorridorMiddle.jpg': {
+                            title: "Charrington Park - Corridor Middle",
+                            label: "Corridor Middle",
+                            offset: 0
+                        },
+                        'CharringtonPark/CharringtonPark-CorridorNorth.jpg': {
+                            title: "Charrington Park - Corridor North",
+                            label: "Corridor North",
                             offset: 0
                         },
                         'CharringtonPark/CharringtonPark-Meadow.jpg': {
@@ -57,15 +97,50 @@
                         },
                     };
                     this.portals = {   // angle to the left of initial center
+                        'CharringtonPark/CharringtonPark-CooperRoad.jpg': {
+                            'CharringtonPark/CharringtonPark-BridgeWest.jpg': -45
+                        },
                         'CharringtonPark/CharringtonPark-BridgeWest.jpg': {
-                            'CharringtonPark/CharringtonPark-Meadow.jpg': 74
+                            'CharringtonPark/CharringtonPark-CooperRoad.jpg': -100,
+                            'CharringtonPark/CharringtonPark-BridgeEast.jpg': 74
+                        },
+                        'CharringtonPark/CharringtonPark-BridgeEast.jpg': {
+                            'CharringtonPark/CharringtonPark-BridgeWest.jpg': -170,
+                            'CharringtonPark/CharringtonPark-TrailA.jpg': -50,
+                            'CharringtonPark/CharringtonPark-Meadow.jpg': 105
+                        },
+                        'CharringtonPark/CharringtonPark-TrailA.jpg': {
+                            'CharringtonPark/CharringtonPark-BridgeEast.jpg': 125,
+                            'CharringtonPark/CharringtonPark-TrailB.jpg': -30,
+                            'CharringtonPark/CharringtonPark-CorridorSouth.jpg': 10
+                        },
+                        'CharringtonPark/CharringtonPark-TrailB.jpg': {
+                            'CharringtonPark/CharringtonPark-TrailA.jpg': 125,
+                            'CharringtonPark/CharringtonPark-AlumCreek.jpg': -135
+                        },
+                        'CharringtonPark/CharringtonPark-AlumCreek.jpg': {
+                            'CharringtonPark/CharringtonPark-TrailB.jpg': 40
+                        },
+                        'CharringtonPark/CharringtonPark-CorridorSouth.jpg': {
+                            'CharringtonPark/CharringtonPark-TrailA.jpg': 172,
+                            'CharringtonPark/CharringtonPark-CorridorMiddle.jpg': 80
+                        },
+                        'CharringtonPark/CharringtonPark-CorridorMiddle.jpg': {
+                            'CharringtonPark/CharringtonPark-CorridorSouth.jpg': -55,
+                            'CharringtonPark/CharringtonPark-CorridorNorth.jpg': 130
+                        },
+                        'CharringtonPark/CharringtonPark-CorridorNorth.jpg': {
+                            'CharringtonPark/CharringtonPark-CorridorMiddle.jpg': -95,
+                            'CharringtonPark/CharringtonPark-Meadow.jpg': -170,
                         },
                         'CharringtonPark/CharringtonPark-Meadow.jpg': {
-                            'CharringtonPark/CharringtonPark-BridgeWest.jpg': 40
-                        }
+                            'CharringtonPark/CharringtonPark-BridgeEast.jpg': 40,
+                            'CharringtonPark/CharringtonPark-CorridorNorth.jpg': -170
+                        },
                     };
 
-                    setSphereAndPortals('CharringtonPark/CharringtonPark-BridgeWest.jpg');
+                    setSphereAndPortals(window.location.hash.slice(1) ||
+                        'CharringtonPark/CharringtonPark-CooperRoad.jpg');
 
                     function setSphereAndPortals(path) {
                         console.log("hashchange:", path, baseComponent.portals[path], baseComponent.el.getAttribute('src'));
@@ -78,16 +153,19 @@
                         });
 
                         for (portalPath in baseComponent.portals[path]) {
+                            let sphere = baseComponent.spheres[portalPath];
+                            if (!sphere) {
+                                console.error("No sphere for ", portalPath);
+                                continue;
+                            }
                             console.log("adding portal for:", portalPath);
                             let newPortal = document.createElement('a-entity');
-
-                            let label = baseComponent.spheres[portalPath].label
-                            newPortal.setAttribute('link', {href: '#' +portalPath, title: label, image: '#sphere-' + portalPath});
+                            newPortal.setAttribute('link', {href: '#' +portalPath, title: sphere.label, image: '#sphere-' + portalPath});
 
                             let angle = baseComponent.portals[path][portalPath];
-                            let x = 8 * Math.sin((180+angle)/180*Math.PI);
-                            let z = 8 * Math.cos((180+angle)/180*Math.PI);
-                            newPortal.setAttribute('position', x + " 1.8 " + z);
+                            let x = 10 * Math.sin((180+angle)/180*Math.PI);
+                            let z = 10 * Math.cos((180+angle)/180*Math.PI);
+                            newPortal.setAttribute('position', x + " 1.6 " + z);
                             newPortal.setAttribute('rotation', "0 " + angle + " 0");
 
                             // sound="on: click; src: #click-sound"
@@ -108,9 +186,17 @@
   <body>
   <a-scene cursor="rayOrigin: mouse" detect-pointer hash-change>
     <a-assets>
-      <img id="sphere-CharringtonPark/CharringtonPark-BridgeWest.jpg" src="CharringtonPark/CharringtonPark-BridgeWest.jpg">
-      <img id="sphere-CharringtonPark/CharringtonPark-Meadow.jpg" src="CharringtonPark/CharringtonPark-Meadow.jpg">
-      <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
+        <img id="sphere-CharringtonPark/CharringtonPark-CooperRoad.jpg" src="CharringtonPark/CharringtonPark-CooperRoad.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-BridgeWest.jpg" src="CharringtonPark/CharringtonPark-BridgeWest.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-BridgeEast.jpg" src="CharringtonPark/CharringtonPark-BridgeEast.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-TrailA.jpg" src="CharringtonPark/CharringtonPark-TrailA.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-TrailB.jpg" src="CharringtonPark/CharringtonPark-TrailB.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-AlumCreek.jpg" src="CharringtonPark/CharringtonPark-AlumCreek.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-CorridorSouth.jpg" src="CharringtonPark/CharringtonPark-CorridorSouth.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-CorridorMiddle.jpg" src="CharringtonPark/CharringtonPark-CorridorMiddle.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-CorridorNorth.jpg" src="CharringtonPark/CharringtonPark-CorridorNorth.jpg">
+        <img id="sphere-CharringtonPark/CharringtonPark-Meadow.jpg" src="CharringtonPark/CharringtonPark-Meadow.jpg">
+        <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
     </a-assets>
     <a-sky></a-sky>
     <a-entity laser-controls="hand: right"></a-entity>
