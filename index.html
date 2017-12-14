@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>Charrington Park</title>
         <meta name="description" content="Charrington Park">
+        <meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M62+)" data-expires="2018-01-24" content="AovVA07QFSW+Uv9P21bHlGcmAB8KgyIHPZYYk/blRsflwksY2naSIAGoq3ufrERLN+t81hjV4YaxxxAqeZiLkQMAAABZeyJvcmlnaW4iOiJodHRwczovL2RvdWdyZWVkZXIuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJXZWJWUjEuMU02MiIsImV4cGlyeSI6MTUxNjgwMTQyNH0=">
         <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
         <script>
             AFRAME.registerComponent('detect-pointer', {
@@ -186,7 +187,7 @@
     </head>
   <body>
   <a-scene cursor="rayOrigin: mouse" detect-pointer hash-change>
-    <a-assets>
+    <a-assets timeout="5000">
         <img id="sphere-CharringtonPark/CharringtonPark-CooperRoad.jpg" src="CharringtonPark/CharringtonPark-CooperRoad.jpg">
         <img id="sphere-CharringtonPark/CharringtonPark-BridgeWest.jpg" src="CharringtonPark/CharringtonPark-BridgeWest.jpg">
         <img id="sphere-CharringtonPark/CharringtonPark-BridgeEast.jpg" src="CharringtonPark/CharringtonPark-BridgeEast.jpg">
