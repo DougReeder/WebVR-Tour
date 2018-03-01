@@ -1,8 +1,7 @@
 # WebVR Tour
 
 Explore a network of photospheres using WebVR!
-
-Demo photospheres are Charrington Park, in Westerville, Ohio.
+Try the demo at [Charrington Park, in Westerville, Ohio](https://dougreeder.github.io/webvr-tour/).
 
 Uses [A-Frame](https://aframe.io), WebVR and the WebVR polyfill to run on most modern browsers, on VR, mobile and desktop.
 
